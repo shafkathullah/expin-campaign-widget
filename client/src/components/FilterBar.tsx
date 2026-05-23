@@ -68,7 +68,7 @@ export function FilterBar({
       aria-label={t('filters.title')}
     >
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="flex flex-1 flex-col gap-4 md:flex-row md:items-end md:gap-6">
+        <div className="flex flex-1 flex-col gap-4 md:flex-row md:items-start md:gap-6">
           {/* Status chips */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
