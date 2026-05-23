@@ -107,6 +107,11 @@ export function FilterBar({
                 {formatPercent(filters.minRate, locale)}
               </span>
             </div>
+            {/* Slider thumb is 20px tall on a 20px-tall root (track is 8px,
+                centered). So the visible track sits 6px below the slider's
+                top edge. Negative top margin shifts the whole slider up so
+                the track aligns with the chip / input top edges; the thumb
+                naturally rides above that line, like a real slider handle. */}
             <Slider
               value={[filters.minRate]}
               min={0}
@@ -114,6 +119,7 @@ export function FilterBar({
               step={MIN_RATE_STEP}
               onValueChange={(v) => onMinRateChange(v[0] ?? 0)}
               aria-label={t('filters.minRate')}
+              className="-mt-1.5"
             />
           </div>
 
