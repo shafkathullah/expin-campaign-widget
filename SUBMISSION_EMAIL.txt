@@ -1,0 +1,21 @@
+To: Feras Arafe
+Subject: Re: Expin take-home task
+
+Hi Feras,
+
+Submitting the take-home.
+
+1. Repo: https://github.com/shafkathullah/expin-campaign-widget
+2. Commit SHA: de10a7e6ff2012d0e6e35a620592ac0aca5c9aad
+3. Loom: <paste Loom URL here>
+4. AI artifacts (in the repo):
+   - CLAUDE.md
+   - docs/SPEC.md
+   - docs/AI-PROMPTS.md
+   - .claude/skills/rtl-audit.md
+
+README has the rundown of what shipped and what I'd do next.
+
+Happy to walk through anything on the call.
+
+Shafkathullah

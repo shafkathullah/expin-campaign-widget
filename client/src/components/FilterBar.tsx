@@ -98,7 +98,7 @@ export function FilterBar({
           </div>
 
           {/* Min conversion rate slider */}
-          <div className="flex min-w-[14rem] flex-col gap-3">
+          <div className="flex min-w-[14rem] flex-col gap-5">
             <div className="flex items-baseline justify-between gap-2">
               <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t('filters.minRate')}
