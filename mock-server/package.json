@@ -1,0 +1,14 @@
+{
+  "name": "expin-mock-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "9.0.3",
+    "cors": "2.8.5",
+    "express": "4.21.0"
+  }
+}

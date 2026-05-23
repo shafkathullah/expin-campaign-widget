@@ -1,0 +1,13 @@
+{
+  "name": "expin-campaign-widget-starter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Take-home starter for the Expin Product Engineer role",
+  "scripts": {
+    "dev": "concurrently -n server,client -c yellow,cyan \"npm --prefix mock-server run dev\" \"npm --prefix client run dev\"",
+    "install:all": "npm install && npm --prefix client install && npm --prefix mock-server install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
