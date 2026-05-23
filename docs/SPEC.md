@@ -176,11 +176,19 @@ sorts something else and then re-sorts back.
 SSE connection opens when the widget mounts, closes on unmount. Patches go
 through `setQueryData`. Visible smoothness:
 
-- Numbers animate via a CSS transition on a `tabular-nums` cell.
-- A short flash highlight (200ms `bg-emerald-50` then fade) on the changed row.
-- Row order does **not** re-shuffle on every patch. We re-sort only when the
-  user explicitly toggles a sort header. (If we sorted live, the table would
-  jitter — bad UX. This is an intentional choice; called out in the Loom.)
+- Numbers render in `tabular-nums` cells so the digit width stays stable.
+- A short flash highlight (700ms `bg-emerald-50`/`bg-emerald-900/20` fade) on
+  the row that just received a patch — makes the change visible without the
+  user having to track which number moved.
+- **Order updates live.** Rows re-sort on every patch. With 50 rows, at most
+  one swap per 2–5s update, stable keys (creator.id), and `React.memo`'d row
+  components, the reorder is smooth — DOM nodes survive across positions.
+  - I considered pinning order to avoid jitter, but pinning means rows can
+    appear in the wrong order relative to the current sort (e.g. row 5
+    shows 19% conv rate while row 1 shows 18%), which is *more* confusing
+    than a smooth reorder. Called out in the Loom as the more interesting
+    tradeoff.
+  - Stable secondary sort by `id` means rows with equal values don't churn.
 
 ### R4. Boost
 
