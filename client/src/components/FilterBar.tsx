@@ -70,7 +70,7 @@ export function FilterBar({
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex flex-1 flex-col gap-4 md:flex-row md:items-start md:gap-6">
           {/* Status chips */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
               {t('filters.status')}
             </label>
@@ -98,7 +98,7 @@ export function FilterBar({
           </div>
 
           {/* Min conversion rate slider */}
-          <div className="flex min-w-[14rem] flex-col gap-2">
+          <div className="flex min-w-[14rem] flex-col gap-3">
             <div className="flex items-baseline justify-between gap-2">
               <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t('filters.minRate')}
@@ -114,12 +114,11 @@ export function FilterBar({
               step={MIN_RATE_STEP}
               onValueChange={(v) => onMinRateChange(v[0] ?? 0)}
               aria-label={t('filters.minRate')}
-              className="mt-3"
             />
           </div>
 
           {/* Search */}
-          <div className="flex min-w-[16rem] flex-col gap-2">
+          <div className="flex min-w-[16rem] flex-col gap-3">
             <label
               htmlFor="creator-search"
               className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
