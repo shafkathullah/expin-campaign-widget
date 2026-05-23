@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { CreatorTable } from './CreatorTable';
 import { FilterBar } from './FilterBar';
@@ -12,6 +12,7 @@ import { useFilters } from '@/hooks/useFilters';
 import { useI18n } from '@/i18n/I18nProvider';
 import { applyFilters } from '@/lib/filter';
 import { applySort } from '@/lib/sort';
+import { applyFrozenOrder } from '@/lib/freezeOrder';
 import { formatInt } from '@/lib/format';
 
 type Props = {
@@ -34,6 +35,29 @@ export function CampaignWidget({ campaignId }: Props) {
   const visible = useMemo(
     () => applySort(filtered, filters.sort, filters.dir),
     [filtered, filters.sort, filters.dir],
+  );
+
+  // ---- Freeze row order while the pointer is over the table --------------
+  // Live re-sort is honest but lets a row slide out from under the cursor
+  // mid-click. While the pointer is over the table we hold the row *sequence*
+  // (cell values still update live via applyFrozenOrder); on pointer-leave the
+  // order snaps back to the true sort.
+  const [hovering, setHovering] = useState(false);
+  const [frozenOrder, setFrozenOrder] = useState<string[] | null>(null);
+
+  // Capture (and refresh) the held sequence. We recapture on hover start and
+  // on an explicit sort change — so a header click the user makes while
+  // hovering is honored — but deliberately NOT on `visible` changing, so SSE
+  // patches don't move rows under the cursor. `visible` is intentionally
+  // omitted from the deps for exactly that reason.
+  useEffect(() => {
+    setFrozenOrder(hovering ? visible.map((c) => c.id) : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hovering, filters.sort, filters.dir]);
+
+  const displayed = useMemo(
+    () => (frozenOrder ? applyFrozenOrder(visible, frozenOrder) : visible),
+    [visible, frozenOrder],
   );
 
   // ---- Render branches ---------------------------------------------------
@@ -100,11 +124,13 @@ export function CampaignWidget({ campaignId }: Props) {
       ) : (
         <CreatorTable
           campaignId={campaignId}
-          creators={visible}
+          creators={displayed}
           sort={filters.sort}
           dir={filters.dir}
           onSort={setSort}
           subscribeFlash={subscribeFlash}
+          onPointerEnter={() => setHovering(true)}
+          onPointerLeave={() => setHovering(false)}
         />
       )}
     </div>

@@ -10,6 +10,8 @@ type Props = {
   dir: SortDir;
   onSort: (key: SortKey, dir: SortDir) => void;
   subscribeFlash: (fn: (id: string) => void) => () => void;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
 };
 
 type Column = { key: SortKey; labelKey: Parameters<ReturnType<typeof useT>>[0]; align: 'start' | 'end' };
@@ -29,6 +31,8 @@ export function CreatorTable({
   dir,
   onSort,
   subscribeFlash,
+  onPointerEnter,
+  onPointerLeave,
 }: Props) {
   const t = useT();
 
@@ -42,7 +46,11 @@ export function CreatorTable({
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg border bg-card">
+    <div
+      className="overflow-x-auto rounded-lg border bg-card"
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/30 text-xs uppercase tracking-wide text-muted-foreground">

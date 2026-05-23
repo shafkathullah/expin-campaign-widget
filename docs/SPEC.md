@@ -194,15 +194,25 @@ through `setQueryData`. Visible smoothness:
 - A short flash highlight (700ms `bg-emerald-50`/`bg-emerald-900/20` fade) on
   the row that just received a patch — makes the change visible without the
   user having to track which number moved.
-- **Order updates live.** Rows re-sort on every patch. With 50 rows, at most
-  one swap per 2–5s update, stable keys (creator.id), and `React.memo`'d row
-  components, the reorder is smooth — DOM nodes survive across positions.
+- **Order updates live, except under the cursor.** Rows re-sort on every
+  patch. With 50 rows, at most one swap per 2–5s update, stable keys
+  (creator.id), and `React.memo`'d row components, the reorder is smooth —
+  DOM nodes survive across positions.
   - I considered pinning order to avoid jitter, but pinning means rows can
     appear in the wrong order relative to the current sort (e.g. row 5
     shows 19% conv rate while row 1 shows 18%), which is *more* confusing
     than a smooth reorder. Called out in the Loom as the more interesting
     tradeoff.
   - Stable secondary sort by `id` means rows with equal values don't churn.
+  - **Freeze while hovering.** Live re-sort's one hazard is a mis-click — a
+    row sliding to a new position the instant before the user clicks Boost.
+    While the pointer is over the table the row *sequence* is held (cell
+    values keep updating live); the held order is captured on pointer-enter,
+    re-captured on an explicit header sort, and released on pointer-leave.
+    Pure reordering helper: `lib/freezeOrder.ts` (`applyFrozenOrder`), driven
+    by hover state in `CampaignWidget`. Boost is bound to `creatorId`, never
+    row index, so correctness never depended on this — the freeze only guards
+    the click *target*. Keyboard/focus users aren't covered yet (follow-up).
 
 ### R4. Boost
 

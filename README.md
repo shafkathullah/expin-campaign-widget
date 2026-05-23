@@ -61,12 +61,20 @@ These are the ones I'd walk through in the Loom. Full reasoning in
    (The patch updater also writes the three metric fields by name as
    forward-compatibility — see SPEC §2.)
 
-2. **Live re-sort, not pinned order.** I considered pinning the row order
-   to avoid jitter, but pinning means rows can appear out-of-order relative
-   to the current sort (row 5 showing 19% conv rate while row 1 shows 18%).
-   With stable keys + `React.memo`'d rows + 50-row scale + one swap per
-   2–5s, the live reorder is smoother *and* more honest than freezing.
-   Stable secondary sort by id avoids churn.
+2. **Live re-sort, not pinned order — but frozen under the cursor.** I
+   considered pinning the row order to avoid jitter, but pinning means rows
+   can appear out-of-order relative to the current sort (row 5 showing 19%
+   conv rate while row 1 shows 18%). With stable keys + `React.memo`'d rows +
+   50-row scale + one swap per 2–5s, the live reorder is smoother *and* more
+   honest than freezing. Stable secondary sort by id avoids churn. The one
+   real downside of live re-sort is a mis-click: a row sliding to its new
+   position the instant before you click Boost. So while the pointer is over
+   the table the row *sequence* is held (cell values keep updating live);
+   order snaps back to the true sort on pointer-leave, and re-captures on an
+   explicit header sort. See `applyFrozenOrder` in
+   [`lib/freezeOrder.ts`](./client/src/lib/freezeOrder.ts). Boost itself is
+   bound to `creatorId`, never row position, so the data is correct
+   regardless — the freeze guards the *click target*, not correctness.
 
 3. **No Zustand store.** Every piece of state in the app already has a
    natural home (server state → TanStack Query; filters → URL via nuqs;
