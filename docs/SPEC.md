@@ -68,21 +68,35 @@ A single `useCreatorStream(campaignId)` hook opens one `EventSource` to
 queryClient.setQueryData(['creators', campaignId], (prev) => patchCreator(prev, event));
 ```
 
-This means:
+`setQueryData` (not `invalidateQueries`) is the load-bearing choice:
+
+- Every 2–5s is too often to refetch the whole list — `invalidateQueries`
+  would trigger a full `GET /creators` per patch.
+- More importantly, a refetch mid-boost would briefly return the server's
+  stale `boosted: false` and clobber the optimistic flag until the boost
+  POST completes and the next refetch lands.
+
+Direct cache patching avoids both. Other properties that fall out of this:
 
 - Components stay subscribed via `useQuery`. They re-render only when their
   derived data changes, because TanStack diffs by reference.
 - The streaming layer never touches React state directly. One source of truth.
-- Reconnect is automatic (EventSource does this). On reconnect, we don't refetch
-  — the patch stream resumes.
+- Reconnect is automatic (`EventSource` does this). On reconnect, we don't
+  re-subscribe — the patch stream resumes.
 
 ### Race conditions handled
 
-1. **SSE arrives during an in-flight boost** — `setQueryData` for SSE only
-   patches `views / conversions / conversionRate`. It never touches `boosted`.
-   The optimistic boost flag survives.
-2. **Boost succeeds, but a stale SSE patch lands first** — same defense:
-   SSE patches only metric fields, not `boosted`.
+1. **SSE during an in-flight boost** — covered by the `setQueryData`
+   choice above. The current SSE payload is `{ creatorId, views,
+   conversions, conversionRate }` — no `boosted` field — so a direct
+   cache patch can't carry one. The real risk would have been a refetch
+   strategy returning the server's stale `boosted: false`, which is the
+   exact case `setQueryData` avoids.
+2. **SSE schema regression (forward-compatibility)** — the patch updater
+   spreads `...c` then writes only the three metric fields *by name*. If
+   the SSE schema later grows a `boosted` field (e.g. to broadcast boost
+   events across merchant tabs), the updater won't silently start
+   clobbering the optimistic flag. Hygiene, not a sharp race today.
 3. **User clicks Boost twice fast** — button is disabled while
    `mutation.isPending || creator.boosted`.
 4. **Boost fails after 1–3s, user filtered the creator away in the meantime** —

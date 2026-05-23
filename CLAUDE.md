@@ -88,8 +88,9 @@ sentinel for "deselected everything."
 
 SPEC §2 lists seven. Two that matter most when editing:
 
-- SSE patches MUST only touch `views / conversions / conversionRate`. Never
-  touch `boosted` — that would clobber an in-flight optimistic boost.
+- SSE → cache goes through `setQueryData`, never `invalidateQueries`. The
+  refetch path would briefly return server `boosted: false` and clobber any
+  optimistic flag in flight. Don't switch the integration.
 - `EventSource` lives in a ref and closes in the effect cleanup. StrictMode
   double-mount in dev is fine; the orphan from the first mount is closed.
 

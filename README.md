@@ -51,10 +51,15 @@ Every requirement in the brief is implemented and working end-to-end.
 These are the ones I'd walk through in the Loom. Full reasoning in
 [`docs/SPEC.md`](./docs/SPEC.md).
 
-1. **SSE patches never touch `boosted`.** The stream updater only writes
-   `views / conversions / conversionRate`. If a stale SSE patch lands during
-   an in-flight boost mutation, the optimistic flag survives. See
+1. **SSE patches go through `setQueryData`, not `invalidateQueries`.**
+   The naive integration is "SSE event arrives → invalidate the creators
+   query → refetch." But every 2–5s is too often to refetch the full
+   list, and worse, a refetch mid-boost would return the server's stale
+   `boosted: false` and clobber the optimistic flag for a window. Direct
+   cache patching avoids both. See
    [`hooks/useCreatorStream.ts`](./client/src/hooks/useCreatorStream.ts).
+   (The patch updater also writes the three metric fields by name as
+   forward-compatibility — see SPEC §2.)
 
 2. **Live re-sort, not pinned order.** I considered pinning the row order
    to avoid jitter, but pinning means rows can appear out-of-order relative
