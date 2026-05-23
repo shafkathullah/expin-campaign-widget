@@ -114,6 +114,7 @@ export function FilterBar({
               step={MIN_RATE_STEP}
               onValueChange={(v) => onMinRateChange(v[0] ?? 0)}
               aria-label={t('filters.minRate')}
+              className="mt-3"
             />
           </div>
 
