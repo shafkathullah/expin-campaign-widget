@@ -25,7 +25,7 @@ function generateCreator(i) {
   return {
     id: `creator_${i.toString().padStart(3, '0')}`,
     name: faker.person.fullName(),
-    handle: '@' + faker.internet.username().toLowerCase(),
+    handle: '@' + faker.internet.userName().toLowerCase(),
     postStatus: status,
     views,
     conversions,
